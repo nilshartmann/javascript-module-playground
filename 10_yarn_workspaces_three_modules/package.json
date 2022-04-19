@@ -1,0 +1,14 @@
+{
+  "name": "module-playground",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": "true",
+  "workspaces": [
+    "frontend",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "yarn --cwd frontend start"
+  }
+}
