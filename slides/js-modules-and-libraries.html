@@ -1,0 +1,300 @@
+<html lang="de">
+  <!DOCTYPE html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>JS Module und Bibliotheken</title>
+
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reset.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reveal.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/theme/solarized.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="revealjs/highlight-js-github-theme.css" />
+    <link rel="stylesheet" href="revealjs/styles.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-state="title">
+          <h2 class="title" style="font-size: 7rem">
+            <b>JS Module und Bibliotheken</b>
+          </h2>
+
+          <h4>
+            <span class="transparent-bg">
+              <a href="https://nilshartmann.net" target="_blank"
+                >Nils Hartmann</a
+              >
+              |
+              <a href="https://twitter.com/nilshartmann" target="_blank"
+                >@nilshartmann</a
+              >
+            </span>
+          </h4>
+
+          <p style="margin-top: 4rem"></p>
+          <div>
+            <h3><span class="transparent-bg">Slides</span></h3>
+            <p>
+              <span class="transparent-bg"
+                >Lokal: slides/2022_04_20_spring-graphql.html</span
+              >
+            </p>
+          </div>
+        </section>
+        <section>
+          <h2>Nils Hartmann</h2>
+          <p>
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+            /
+            <a href="https://twitter.com/nilshartmann" target="_blank"
+              >@nilshartmann</a
+            >
+          </p>
+          <p>
+            <em
+              >Freiberuflicher Software-Entwickler, Berater und Trainer aus
+              Hamburg</em
+            >
+          </p>
+
+          <div style="display: flex; justify-content: center">
+            <div>
+              <p>Java</p>
+              <p>JavaScript, TypeScript</p>
+              <p>React</p>
+              <p>Single-Page-Applications</p>
+              <p>GraphQL</p>
+              <p style="margin-top: 20px">
+                <a href="https://nilshartmann.net/workshops"
+                  >Schulungen und Workshops</a
+                >
+              </p>
+            </div>
+            <div style="margin-left: 15px">
+              <a href="https://reactbuch.de"
+                ><img
+                  style="max-height: 450px"
+                  src="images/react-buch-v2.jpg"
+                /><br />https://reactbuch.de</a
+              >
+              <br />
+            </div>
+          </div>
+        </section>
+
+        <section data-markdown>
+          <textarea data-template>
+# ...
+
+* Teil 1: "Basis"
+  * Package Manager
+  * Modul-Systeme in JavaScript
+    * Node.JS vs. Browser
+    * Besonderheiten: TypeScript und React/JSX
+  * Workspaces und Mono Repos
+
+* Teil 2: Verwaltung von Abhängigkeiten
+ * Releases erstellen
+ * 3rd-Party-Libs (Updates, Lizenzen, Sicherheitsprobleme)
+
+---
+
+# Package Manager
+
+* installieren Packages
+  * was ist ein Package
+* Probleme / Herausforderungen
+  * Auflösen der Dependencies
+  * Runterladen und speichern der Dependencies
+    * muss in einem format passieren, das von NodeJS verstanden wird
+    * PnP von Yarn z.B. greift dazu in den resolution-Prozess ein (und [patched TypeScript beim Installieren](https://github.com/yarnpkg/berry/tree/master/packages/plugin-compat)!)
+    * Das muss dann in allen Tools funktionieren, z.B. auch mit TypeScript oder Webpack
+* Scripte
+  * Ausführen lokaler Skripte, z.B. zum Starten einer Anwendung
+  
+---
+
+# PackageManager
+
+* npm - Klassiker, in Node enthalten
+* [yarn ("classic")](https://classic.yarnpkg.com/lang/en/) - war mal schneller als npm und hatte als erstes `.lock`-Dateien und Workspace-Konzept
+* [yarn 2/3 ("betty")](https://yarnpkg.com/) - Dependency-Regeln mit Prolog, plug-n-play (keine Installation von Packages mehr notwendig, effizientere Speicherung von Packages)
+* [pnpm](https://pnpm.io) - "performant" npm
+* [corepack](https://nodejs.org/dist/latest/docs/api/corepack.html) - kein Packagemanager, sondern "Proxy" in Node, um transparent (ohne Installation) den Package-Manager eines Projekts zu verwenden
+
+* _Performance_ bei Package-Managern bezieht sich in der Regel "nur" auf das Installieren/Upgraden von Packages
+
+---
+
+# Probleme Modul-System
+
+* Es gibt zwei CommonJS (Node) und ESM
+* Packages müssen zur Build und zur Laufzeit gefunden werden
+  * Im Browser verwenden wir i.d.R. gar kein Modulsystem
+* Eine Anwendung möchte evtl. beide Modulsysteme nutzen
+  * Zumindest indirekt über eingebundene Bibliotheken
+* Modul-Systeme verhalten sich unterschiedlich
+  * CommonJS: synchrone imports, ESM ist asynchron 
+  * CommonJS-Module können keine ESM-Module verwenden! 
+* Einige Bibliotheken stehen als JS, andere als TS zur Verfügung
+* Diese Probleme sind unabhängig davon, ob man Mono-Repo verwendet oder nicht
+
+
+---
+
+# Workspaces / MonoRepos
+
+* Herausforderungen:
+  * wenn wir mehrere Module entwickeln, wollen wir die möglichst lokal haben,
+    um sie einfach verwenden, testen und ändern zu können
+  * Roundtrip: publish -> install wäre zu lang
+* Workspaces werden von allen Package-Managern unterstützt
+  * npm, yarn, pnpm
+
+---
+
+# Lerna
+
+* Erst ["not actively maintained"](https://github.com/lerna/lerna/commit/8b99493ac90484e05f7ebee533c0763534d60218)
+* Dann von [nrwl übernommen](https://github.com/lerna/lerna/issues/3121)
+* Was das für die [Zukunft von Lerna](https://blog.nrwl.io/lerna-is-dead-long-live-lerna-61259f97dbd9) bedeutet, ist mir nicht klar 
+
+---
+
+# Workspace
+
+* Problem: Peformance und Architektur
+
+* Wenn wir viele Packages in einem Monorepo haben, wollen wir die nicht alle
+  neu bauen, wenn wir eins verändert haben
+* Nur die abhängigen neu bauen (und ggf. testen)
+* Dazu gibt es spezialisierte Tools wie Nx oder Turborepo
+* Diese fügen z.B. einen Build-Cache hinzu
+* Und weiteres Tooling (z.B. VS Code Extension für NX)
+* Architektur-Visualisierung
+
+---
+
+# NX
+
+* Unglaublich viel Tooling für alles mögliche
+* Inklusive Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
+* Workspaces bestehen aus Anwendungen und Bibliotheken
+* Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
+  * man kann sie aber explizt so konfigurieren (https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
+
+---
+
+# Bundler
+
+* Sollen unterstützen: TypeScript/Babel, CSS/SVG/PNG/..., Hot Reload/Fast Refresh?
+* Wie wird getestet?
+* Webpack
+* Rollup
+* esbuild (in Go geschrieben, sehr schnell)
+
+---
+
+
+
+# Bibliotheken
+
+* Problem Laufzeit: NodeJS vs. Browser
+
+* Im Browser verwenden wir (noch) kein Modulsystem
+* Nach dem Build haben wir kein Modulsystem mehr
+* Alle Packages/Module werden aufgelöst, das machen Bundlor
+  * Webpack, Rollup
+* So ein Tool brauchst Du, insb.
+  * für deine _Anwendung_, die später im Browser laufen soll 
+  * nicht für die Libs,
+  * es sei denn, die Lib verwendet z.B. CSS Modules/PostCSS, SASS
+  * dann brauchst Du Webpack oder Rollup um die Dateien zu verarbeiten
+
+---
+
+# Package.json
+
+* `type`: `module` oder  `commons`
+  * gibt an, welches Modulsystem das Package verwendet
+* `main`: diese Datei wird beim import/require des Moduls verwendet **deprecated**
+* `exports`: (https://nodejs.org/api/packages.html#exports)
+  * `exports: dateiname.js: entspricht ehem `main`
+  * oder "conditional exports", hier können Pfade pro Modulsystem angegeben weden:
+  * `exports: { "import": "./index.mjs", "require": "./index.cjs" }`
+  * außerdem können mehrere Pfade exportiert werden
+  * https://nodejs.org/api/packages.html#conditional-exports
+
+<!-- .element: class="todo" -->TypeScript Konfiguration vor/nach 4.6/4.7  
+
+---
+
+# Empfehlung
+
+* Die ganze Modul/MonoRepo-Szene ist sehr fragmentiert und fragil
+* In einem Stack muss immer alles mit allem zusammenspielen 
+* Möglichst auf Mainstream setzen
+* So wenig Tooling wie möglich
+
+---
+
+# Sicherheit
+
+* `npm audit`
+  * auch in [Nexus integriert](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry/npm-audit) (eventuell nur mit Nexus IQ)
+
+# Abhängigkeitsmanagement
+
+* [CycloneDX](https://cyclonedx.org/): Erzeugt einen Software Bill-of-Material (sbom) für ein Java/Node/...-Projekt
+  * Es gibt Support für diverse [Tools, Sprachen etc.](https://cyclonedx.org/tool-center/)
+* Der SBOM kann in Depdency Tracker eingelesen werden
+* [dependencyTrack](https://dependencytrack.org/) kann bestimmte Prüfungen durchführen: Verwendete Lizenzen, Security Alerts
+  * Integration in [Jenkins mittels Plugin](https://plugins.jenkins.io/dependency-track/)
+
+          </textarea>
+        </section>
+        <section>
+          <h2>Geschafft! 😊</h2>
+          <h3>Vielen Dank für Eure Teilnahme!</h3>
+          <h3>Viel Spaß und Erfolg mit GraphQL!</h3>
+          <p>Wenn ihr noch Fragen habt, könnt ihr mich erreichen:</p>
+          <p>
+            <a href="mailto:nils@nilshartmann.net">nils@nilshartmann.net</a>
+          </p>
+          <p>
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+          </p>
+          <p>
+            <a
+              href="https://www.xing.com/profile/Nils_Hartmann2/cv"
+              target="_blank"
+              >Xing</a
+            >
+          </p>
+
+          <p>
+            Twitter:
+            <a href="https://twitter.com/nilshartmann" target="_blank"
+              >@nilshartmann</a
+            >
+          </p>
+        </section>
+      </div>
+    </div>
+    <script src="revealjs/reveal.js/dist/reveal.js"></script>
+    <script src="revealjs/reveal.js/plugin/notes/notes.js"></script>
+    <script src="revealjs/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="revealjs/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="revealjs/config.js"></script>
+  </body>
+</html>
