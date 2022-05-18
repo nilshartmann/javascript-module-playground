@@ -197,11 +197,28 @@
 
 # NX
 
+* [https://nx.dev/](https://nx.dev/)
 * Unglaublich viel Tooling für alles mögliche
 * Inklusive Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
 * Workspaces bestehen aus Anwendungen und Bibliotheken
 * Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
   * man kann sie aber explizt so konfigurieren (https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
+* Code-Generatoren erzeugen Boilerblate-Code für alles mögliche
+  * Zum Beispiel React Apps, UI Libs, Tests
+  * Unter der Haube wird für React wohl Webpack verwendet
+
+---
+
+## TurboRepo
+
+* "Nur" Task-Runner
+* Man definiert eine Pipeline
+  * Beschreibt, in welcher Reihenfolge welche Packages gebaut werden müssen 
+  * wie die Packages gebaut werden müssen
+  * Die Tasks können parallel laufen (!)
+  * Caching von Ergebnissen (auch in der Cloud), so dass nur Änderungen neu gebaut werden müssen
+* Wie die einzelnen Packages gebaut werden, entscheidet jedes Package selbst (z.B. mit create-react-app)
+* Kein Workflow zum Veröffentlichen von Packages. In der Doku wird dafür auf Lerna verwiesen...
 
 ---
 
