@@ -107,22 +107,34 @@
 
 ---
 
-# Package Manager
+## Packages und Module
 
-* installieren Packages
-  * was ist ein Package
+![xxxxxxxxx](./images/packages-und-module.png)
+
+---
+
+## Package Manager: Aufgaben I
+
+* **Installation von Packages**
 * Probleme / Herausforderungen
-  * Auflösen der Dependencies
-  * Runterladen und speichern der Dependencies
+  * Auflösen der Dependencies (Packages, die andere Packages benötigen)
+  * Runterladen und lokales Speichern der Packages
     * muss in einem format passieren, das von NodeJS verstanden wird
     * PnP von Yarn z.B. greift dazu in den resolution-Prozess ein (und [patched TypeScript beim Installieren](https://github.com/yarnpkg/berry/tree/master/packages/plugin-compat)!)
-    * Das muss dann in allen Tools funktionieren, z.B. auch mit TypeScript oder Webpack
+      * Das muss dann in allen Tools funktionieren, z.B. auch mit TypeScript oder Webpack
 * Scripte
-  * Ausführen lokaler Skripte, z.B. zum Starten einer Anwendung
+  * Ausführen lokaler Skripte, z.B. zum Starten einer Anwendung (`scripts` in `package.json`)
   
 ---
 
-# PackageManager
+## Package Manager, Aufgaben: II
+
+* Workspace-Konzept
+
+
+---
+
+## Übersicht PackageManager
 
 * npm - Klassiker, in Node enthalten
 * [yarn ("classic")](https://classic.yarnpkg.com/lang/en/) - war mal schneller als npm und hatte als erstes `.lock`-Dateien und Workspace-Konzept
@@ -195,13 +207,30 @@
 
 # Bundler
 
-* Sollen unterstützen: TypeScript/Babel, CSS/SVG/PNG/..., Hot Reload/Fast Refresh?
+* Sollen unterstützen
+  * TypeScript/Babel
+  * CSS/PostCSS/CSS Modules/Sass
+  * Json, SVG/PNG
+  * Hot Reload/Fast Refresh während Entwicklung
+  * Code Splitting / Tree Shaking
 * Wie wird getestet?
 * Webpack
 * Rollup
 * esbuild (in Go geschrieben, sehr schnell)
 
 ---
+
+# ESbuild
+
+* In Go geschrieben, arbeitet parallel deswegen sehr schnell
+* Funktioniert auch als Compiler (?), verwendet jedenfalls kein Babel
+  * Bessere Performance als Webpack (webpack parsed zweimal: Babel und dann Webpack)
+  * Man kann aber nicht alle Babel-Features (Plugins) nutzen
+* Bundling funktioniert noch nicht richtig
+  * Code-Splitting nur mit ESM-Modules z.B.
+  * deswegen verwendet Vite ESBuild nur  zur Entwicklungszeit
+
+---  
 
 
 
@@ -221,6 +250,19 @@
 
 ---
 
+# Arbeiten mit Applikationen
+
+* Hot-Refresh
+* Test-support
+
+* https://vitejs.dev/
+ * benutzt unter der haube es esbuild (nur zur Entwicklungszeit), ansonten Rollup
+ * sehr schnell
+ * leider eigenes Test-Tool [Vitest](https://vitest.dev/)
+   * [vite-jest](https://github.com/sodatea/vite-jest#readme) sieht eher verloren aus
+
+---
+
 # Package.json
 
 * `type`: `module` oder  `commons`
@@ -230,10 +272,25 @@
   * `exports: dateiname.js: entspricht ehem `main`
   * oder "conditional exports", hier können Pfade pro Modulsystem angegeben weden:
   * `exports: { "import": "./index.mjs", "require": "./index.cjs" }`
+  * Auf Dateiendung bei "hybriden"-Modulen achten:
+    * wenn als `type: module` gesetzt ist, werden **alle** Dateien, die mit `.js`-Enden als
+      ESM-Dateien angesehen, auch wenn sie als `require` unter `exports` aufgeführt werden 🤦
   * außerdem können mehrere Pfade exportiert werden
   * https://nodejs.org/api/packages.html#conditional-exports
 
 <!-- .element: class="todo" -->TypeScript Konfiguration vor/nach 4.6/4.7  
+
+---
+
+# TypeScript
+
+* In der `tsconfig` kann gesteuert werden, welches Modul-Format TypeScript erzeugt:
+  * `"module": "ES2020"` oder `"module": "ESNext": ESM
+  * `"module": "commonjs"`": CommonJS (default)
+* Wenn man als als Modulsystem ESM konfiguriert, müssen die Importe Dateiendungen haben:
+  * `import x from "./x.js"
+  * Hier auch `.js` obwohl x möglicherweise ein TypeScript-Modul ist ...  
+
 
 ---
 
@@ -258,6 +315,13 @@
 * Der SBOM kann in Depdency Tracker eingelesen werden
 * [dependencyTrack](https://dependencytrack.org/) kann bestimmte Prüfungen durchführen: Verwendete Lizenzen, Security Alerts
   * Integration in [Jenkins mittels Plugin](https://plugins.jenkins.io/dependency-track/)
+
+---  
+
+# Releases  
+
+* semantic-release: https://github.com/semantic-release/semantic-release
+* Commitizen: https://commitizen-tools.github.io/commitizen/
 
           </textarea>
         </section>
