@@ -1,5 +1,5 @@
 // Zugriff eines ESM Modusl auf ESM (lib) => funcktioniert
-import { sayHello } from "@nilshartmann/lib";
+import { sayHello } from "@nilshartmann/lib-esm";
 
 // Zugriff eines ESM Moduls auf CommonJS (lib-cjs) funktioniert
 

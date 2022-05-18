@@ -1,5 +1,5 @@
 {
-  "name": "@nilshartmann/lib",
+  "name": "@nilshartmann/lib-esm",
   "version": "1.0.0",
   "exports": "./dist/lib.js",
   "type": "module",

@@ -11,7 +11,7 @@
   },
   "types": "dist/main.d.ts",
   "scripts": {
-    "build": "del dist-cjs && del dist/ && tsc -p . && tsc -p tsconfig-cjs.json"
+    "build": "del dist-cjs && del dist/ && tsc -p . && tsc -p tsconfig-cjs.json && echo '{\"type\": \"commonjs\"}'>dist-cjs/package.json"
   },
   "devDependencies": {
     "del-cli": "^4.0.1",

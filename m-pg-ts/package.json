@@ -4,8 +4,8 @@
   "license": "MIT",
   "private": "true",
   "workspaces": [
-    "lib",
-    "app",
+    "lib-esm",
+    "app-cjs",
     "app-esm",
     "lib-cjs",
     "utils"

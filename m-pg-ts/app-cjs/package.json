@@ -1,21 +1,18 @@
 {
-  "name": "@nilshartmann/app-esm",
+  "name": "@nilshartmann/app",
   "version": "1.0.0",
+  "main": "index.js",
   "license": "MIT",
-  "type": "module",
   "dependencies": {
-    "@nilshartmann/lib-esm": "1.0.0",
     "@nilshartmann/lib-cjs": "1.0.0",
     "@nilshartmann/utils": "1.0.0"
   },
   "scripts": {
     "start": "node build/main.js",
-    "build": "del build/ && tsc -p .",
-    "dev": "ts-node --esm src/main.ts"
+    "build": "del build/ && tsc -p ."
   },
   "devDependencies": {
     "del-cli": "^4.0.1",
-    "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
   }
 }
