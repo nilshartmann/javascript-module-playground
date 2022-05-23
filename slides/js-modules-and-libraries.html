@@ -42,7 +42,7 @@
             <h3><span class="transparent-bg">Slides</span></h3>
             <p>
               <span class="transparent-bg"
-                >Lokal: slides/2022_04_20_spring-graphql.html</span
+                >Lokal: slides/js-modules-and-libraries.html</span
               >
             </p>
           </div>
@@ -92,7 +92,7 @@
 
         <section data-markdown>
           <textarea data-template>
-# ...
+# Agenda
 
 * Teil 1: "Basis"
   * Package Manager
@@ -109,79 +109,206 @@
 
 ## Packages und Module
 
-![xxxxxxxxx](./images/packages-und-module.png)
+![Packages und Module](./images/packages-und-module.png)
 
 ---
 
-## Package Manager: Aufgaben I
+## Package Manager, Aufgaben I
 
-* **Installation von Packages**
+### Installation von Packages
 * Probleme / Herausforderungen
   * Auflösen der Dependencies (Packages, die andere Packages benötigen)
   * Runterladen und lokales Speichern der Packages
-    * muss in einem format passieren, das von NodeJS verstanden wird
-    * PnP von Yarn z.B. greift dazu in den resolution-Prozess ein (und [patched TypeScript beim Installieren](https://github.com/yarnpkg/berry/tree/master/packages/plugin-compat)!)
-      * Das muss dann in allen Tools funktionieren, z.B. auch mit TypeScript oder Webpack
+    * muss in einem Format passieren, das von NodeJS verstanden wird
+  * _Performance_ bei Package-Managern bezieht sich in der Regel auf diese beiden Punkte (Installation/Upgrade von Packages)  
+  * Lock-Files um "einzufrieren", welche Packages in welcher Version von welcher Quelle installiert wurden
+   - Ermöglicht reproduzierbare Builds
 * Scripte
   * Ausführen lokaler Skripte, z.B. zum Starten einer Anwendung (`scripts` in `package.json`)
   
 ---
 
-## Package Manager, Aufgaben: II
+## Package Manager, Aufgaben II
 
-* Workspace-Konzept
-
+### Workspace-Konzept
+ * Mehrere Packages lokal im Workspace/Repository
+ * Ziele: 
+   - Vermindern von mehrfacher Installation derselben Packages
+   - Ausführen von Scripts in mehreren Packages
+   - Lokales Arbeiten mit Packages vereinfachen (lokales Package A kann direkt lokales Package B verwenden)
 
 ---
 
-## Übersicht PackageManager
+## Übersicht Package Manager
 
 * npm - Klassiker, in Node enthalten
 * [yarn ("classic")](https://classic.yarnpkg.com/lang/en/) - war mal schneller als npm und hatte als erstes `.lock`-Dateien und Workspace-Konzept
-* [yarn 2/3 ("betty")](https://yarnpkg.com/) - Dependency-Regeln mit Prolog, plug-n-play (keine Installation von Packages mehr notwendig, effizientere Speicherung von Packages)
+* [yarn 2/3 ("betty")](https://yarnpkg.com/) 
+  - "plug-n-play" (keine Installation von Packages mehr notwendig, effizientere Speicherung von Packages)
+    - Das muss dann in allen Tools funktionieren, z.B. auch IDEs, TypeScript oder Webpack
+    - Yarn z.B. greift dazu in den resolution-Prozess ein (und [patched TypeScript beim Installieren](https://github.com/yarnpkg/berry/tree/master/packages/plugin-compat)!) 😱
+  - Dependency-Regeln mit Prolog
 * [pnpm](https://pnpm.io) - "performant" npm
-* [corepack](https://nodejs.org/dist/latest/docs/api/corepack.html) - kein Packagemanager, sondern "Proxy" in Node, um transparent (ohne Installation) den Package-Manager eines Projekts zu verwenden
-
-* _Performance_ bei Package-Managern bezieht sich in der Regel "nur" auf das Installieren/Upgraden von Packages
+ - Dateien im node_modules-Verzeichnis werden verlinkt
+ - Package müssen daher nur einmal lokal installiert werden
+* [corepack](https://nodejs.org/dist/latest/docs/api/corepack.html) (_experimentell_) 
+  - kein Packagemanager, sondern "Proxy" in Node, um transparent (ohne Installation) den Package-Manager eines Projekts zu verwenden
 
 ---
 
-# Probleme Modul-System
+# Modul-Systeme in JavaScript
 
-* Es gibt zwei CommonJS (Node) und ESM
-* Packages müssen zur Build und zur Laufzeit gefunden werden
-  * Im Browser verwenden wir i.d.R. gar kein Modulsystem
+---
+
+## Modul-Systeme
+
+### Es gibt mehrere Modulsysteme in JS
+
+* [CommonJS](https://nodejs.org/docs/latest/api/modules.html) (Node)
+* [ECMAScript Modules (ESM)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+  * CommonJS der Klassiker in/für NodeJS
+  * ESM erst seit ES2015
+  * Verbreiteter Support für ESM in Browsern und Node noch recht neu (Node stabil seit Version 12, Ende 2019)
+
+---
+
+## Modul-Systeme: Probleme 
+
+### Zugriff/Verwendung der Module
+
+* Module müssen zur Laufzeit gefunden werden
+  * CommonJS läuft nicht im Browser 😿
+  * (u.a.) deswegen verwenden wir Bundlor (Webpack, Rollup)
+  * Dann müssen die Module auch zur Buildzeit gefunden werden
+ * Module müssen zur Buildzeit gefunden werden
+  * (Für Bundlor)
+  * Für TypeScript, mindestens die Type Declarations
+  * Für IDE-Support
+  * ...
+
+---
+
+## Modul-Systeme: Probleme 
+
+### Zugriff/Verwendung der Module
+  
 * Eine Anwendung möchte evtl. beide Modulsysteme nutzen
   * Zumindest indirekt über eingebundene Bibliotheken
-* Modul-Systeme verhalten sich unterschiedlich
+* Modul-Systeme verhalten sich unterschiedlich 🥳
   * CommonJS: synchrone imports, ESM ist asynchron 
-  * CommonJS-Module können keine ESM-Module verwenden! 
+  * **CommonJS-Module können keine ESM-Module verwenden!**
+  * TypeScript erzeugt per Default aber CommonJS-Code
 * Einige Bibliotheken stehen als JS, andere als TS zur Verfügung
-* Diese Probleme sind unabhängig davon, ob man Mono-Repo verwendet oder nicht
+* (Diese Probleme sind unabhängig davon, ob man Mono-Repo verwendet oder nicht)
+
+---
+
+## Modul-Systeme: Konfiguration 
+
+
+### Package.json
+
+* `type`: `module` oder  `commonsjs`
+  * gibt an, welches Modulsystem das Package (per Default) verwendet
+* `main`: diese Datei wird beim import/require des Moduls verwendet **deprecated**
+* `exports`: (https://nodejs.org/api/packages.html#exports)
+  * `exports: dateiname.js: entspricht ehem `main`
+  * oder "conditional exports", hier können Pfade pro Modulsystem angegeben weden:
+  * `exports: { "import": "./index.mjs", "require": "./index.cjs" }`
+  * Auf Dateiendung bei "hybriden"-Modulen achten:
+    * wenn als `type: module` gesetzt ist, werden **alle** Dateien, die mit `.js`-Enden als
+      ESM-Dateien angesehen, auch wenn sie als `require` unter `exports` aufgeführt werden 🤦
+  * außerdem können mehrere Pfade exportiert werden
+  * https://nodejs.org/api/packages.html#conditional-exports
+
+---
+
+## Modul-Systeme: Konfiguration
+
+* In der `tsconfig` kann gesteuert werden, welches Modul-Format TypeScript erzeugt:
+  * `"module": "ES2020"` oder `"module": "ESNext": ESM
+  * `"module": "commonjs"`": CommonJS (default)
+* Wenn man als als Modulsystem ESM konfiguriert, müssen die Importe Dateiendungen haben:
+  * `import x from "./x.js"
+  * Hier auch `.js` obwohl `x` möglicherweise ein TypeScript-Modul ist ...  
 
 
 ---
 
-# Workspaces / MonoRepos
+## Bundler I
 
-* Herausforderungen:
-  * wenn wir mehrere Module entwickeln, wollen wir die möglichst lokal haben,
-    um sie einfach verwenden, testen und ändern zu können
+### Das Modulsystem ist nur ein Teil im Tool-Stack...
+  * JavaScript, 2 Modulsysteme
+  * TypeScript/Babel
+  * CSS/PostCSS/CSS Modules/Sass
+  * Json, SVG/PNG
+  * Hot Reload/Fast Refresh während Entwicklung
+  * Code Splitting / Tree Shaking
+* Wie wird getestet?
+
+---
+
+## Bundler II
+
+### Typische Vertreter
+* Webpack: Klassiker, in create-react-app enthalten
+* Rollup: bietet sich insbesondere für Bibliotheken an
+* esbuild (in Go geschrieben, sehr schnell)
+
+---
+
+### Bundler
+
+### ESbuild: die Zukunft?
+
+* In Go geschrieben, arbeitet parallel deswegen sehr schnell
+* Funktioniert auch als Compiler (?), verwendet jedenfalls kein Babel
+  * Bessere Performance als Webpack (webpack parsed zweimal: Babel und dann Webpack)
+  * Man kann aber nicht alle Babel-Features (Plugins) nutzen
+* Bundling funktioniert noch nicht richtig
+  * Code-Splitting nur mit ESM-Modules z.B.
+  * deswegen verwendet Vite ESBuild nur  zur Entwicklungszeit
+
+---
+
+## Workspaces / Mono-Repos
+
+### Anforderungen:
+* Ausführen von Scripts in allen Packages (z.B. "install" oder "build")
+* Doppelte Packages sollen nach Möglichkeit nicht doppelt installiert werden
+  * Zum Beispiel wenn selbe React-Version in mehreren Packages verwendet wird
+* wenn wir mehrere Packages entwickeln, wollen wir die möglichst lokal haben,
+  um sie einfach verwenden, testen und ändern zu können
   * Roundtrip: publish -> install wäre zu lang
-* Workspaces werden von allen Package-Managern unterstützt
+* Packages müssen u.U. erst gebaut werden (TypeScript, Webpack, Roll-up, ...), bevor wir sie benutzen können
+  * Wer steuert, wann welches Package gebaut werden muss?
+  * Änderung in Package A, das von B benutzt wird: Package B tests neu ausführen? Package B neu bauen?
+
+---
+
+## Workspaces / Mono-Repos
+
+* Workspaces werden von allen Package-Managern mittlerweile unterstützt
   * npm, yarn, pnpm
+  * In der Regel bezieht sich das auf zentrale Installation von Abhängigkeiten
 
 ---
 
-# Lerna
+## Lerna
 
-* Erst ["not actively maintained"](https://github.com/lerna/lerna/commit/8b99493ac90484e05f7ebee533c0763534d60218)
-* Dann von [nrwl übernommen](https://github.com/lerna/lerna/issues/3121)
+* Der Klassiker der Mono-Repo-Tools 
+  * Installation von Dependencies
+  * Publishing von neuen Packages
+* Erst ["not actively maintained"](https://github.com/lerna/lerna/commit/8b99493ac90484e05f7ebee533c0763534d60218)...
+* ...dann von [nrwl übernommen](https://github.com/lerna/lerna/issues/3121)
 * Was das für die [Zukunft von Lerna](https://blog.nrwl.io/lerna-is-dead-long-live-lerna-61259f97dbd9) bedeutet, ist mir nicht klar 
+* Alternativen
+  * [workspace-tools Plug-in](https://github.com/yarnpkg/berry/blob/HEAD/packages/plugin-workspace-tools/README.md) von Yarn 2
+  * ?
 
 ---
 
-# Workspace
+## Workspace und MonoRepos
 
 * Problem: Peformance und Architektur
 
@@ -195,21 +322,9 @@
 
 ---
 
-# NX
+## Mono-Repo: Tools
 
-* [https://nx.dev/](https://nx.dev/)
-* Unglaublich viel Tooling für alles mögliche
-* Inklusive Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
-* Workspaces bestehen aus Anwendungen und Bibliotheken
-* Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
-  * man kann sie aber explizt so konfigurieren (https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
-* Code-Generatoren erzeugen Boilerblate-Code für alles mögliche
-  * Zum Beispiel React Apps, UI Libs, Tests
-  * Unter der Haube wird für React wohl Webpack verwendet
-
----
-
-## TurboRepo
+### TurboRepo
 
 * "Nur" Task-Runner
 * Man definiert eine Pipeline
@@ -222,96 +337,56 @@
 
 ---
 
-# Bundler
+## Mono-Repo: Tools
 
-* Sollen unterstützen
-  * TypeScript/Babel
-  * CSS/PostCSS/CSS Modules/Sass
-  * Json, SVG/PNG
-  * Hot Reload/Fast Refresh während Entwicklung
-  * Code Splitting / Tree Shaking
-* Wie wird getestet?
-* Webpack
-* Rollup
-* esbuild (in Go geschrieben, sehr schnell)
+### NX
 
----
-
-# ESbuild
-
-* In Go geschrieben, arbeitet parallel deswegen sehr schnell
-* Funktioniert auch als Compiler (?), verwendet jedenfalls kein Babel
-  * Bessere Performance als Webpack (webpack parsed zweimal: Babel und dann Webpack)
-  * Man kann aber nicht alle Babel-Features (Plugins) nutzen
-* Bundling funktioniert noch nicht richtig
-  * Code-Splitting nur mit ESM-Modules z.B.
-  * deswegen verwendet Vite ESBuild nur  zur Entwicklungszeit
-
----  
-
-
-
-# Bibliotheken
-
-* Problem Laufzeit: NodeJS vs. Browser
-
-* Im Browser verwenden wir (noch) kein Modulsystem
-* Nach dem Build haben wir kein Modulsystem mehr
-* Alle Packages/Module werden aufgelöst, das machen Bundlor
-  * Webpack, Rollup
-* So ein Tool brauchst Du, insb.
-  * für deine _Anwendung_, die später im Browser laufen soll 
-  * nicht für die Libs,
-  * es sei denn, die Lib verwendet z.B. CSS Modules/PostCSS, SASS
-  * dann brauchst Du Webpack oder Rollup um die Dateien zu verarbeiten
+* [https://nx.dev/](https://nx.dev/)
+* Unglaublich viel Tooling für alles mögliche
+* Inklusive Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
+* Workspaces bestehen aus Anwendungen und Bibliotheken
+* Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
+  * man kann sie aber explizt [so konfigurieren](https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
+* Code-Generatoren erzeugen Boilerblate-Code für alles mögliche
+  * Zum Beispiel React Apps, UI Libs, Tests
+  * Unter der Haube wird für React wohl Webpack verwendet
 
 ---
 
-# Arbeiten mit Applikationen
+## Rush
 
+* [https://rushjs.io/](https://rushjs.io/) von Microsoft
+* Einenaussage: geeignet für sehr große Monorepos
+* Benutzt pnpm 
+* Support für inkremtental Builds und Publishing von Packages
+  * Führt zum Build einfach `npm run build` in jedem Package aus
+  * Was man dabei macht, ist einem selbst überlassen
+
+---
+
+## Arbeiten mit Applikationen
+
+### Anforderungen
 * Hot-Refresh
 * Test-support
 
+---
+
+## Arbeiten mit Applikationen
+
+### Tools
+* create-react-app (bekannt)
+* NX (schon gesehen)
 * https://vitejs.dev/
  * benutzt unter der haube es esbuild (nur zur Entwicklungszeit), ansonten Rollup
  * sehr schnell
  * leider eigenes Test-Tool [Vitest](https://vitest.dev/)
    * [vite-jest](https://github.com/sodatea/vite-jest#readme) sieht eher verloren aus
 
----
-
-# Package.json
-
-* `type`: `module` oder  `commons`
-  * gibt an, welches Modulsystem das Package verwendet
-* `main`: diese Datei wird beim import/require des Moduls verwendet **deprecated**
-* `exports`: (https://nodejs.org/api/packages.html#exports)
-  * `exports: dateiname.js: entspricht ehem `main`
-  * oder "conditional exports", hier können Pfade pro Modulsystem angegeben weden:
-  * `exports: { "import": "./index.mjs", "require": "./index.cjs" }`
-  * Auf Dateiendung bei "hybriden"-Modulen achten:
-    * wenn als `type: module` gesetzt ist, werden **alle** Dateien, die mit `.js`-Enden als
-      ESM-Dateien angesehen, auch wenn sie als `require` unter `exports` aufgeführt werden 🤦
-  * außerdem können mehrere Pfade exportiert werden
-  * https://nodejs.org/api/packages.html#conditional-exports
-
-<!-- .element: class="todo" -->TypeScript Konfiguration vor/nach 4.6/4.7  
 
 ---
 
-# TypeScript
-
-* In der `tsconfig` kann gesteuert werden, welches Modul-Format TypeScript erzeugt:
-  * `"module": "ES2020"` oder `"module": "ESNext": ESM
-  * `"module": "commonjs"`": CommonJS (default)
-* Wenn man als als Modulsystem ESM konfiguriert, müssen die Importe Dateiendungen haben:
-  * `import x from "./x.js"
-  * Hier auch `.js` obwohl x möglicherweise ein TypeScript-Modul ist ...  
-
-
----
-
-# Empfehlung
+## Empfehlung
 
 * Die ganze Modul/MonoRepo-Szene ist sehr fragmentiert und fragil
 * In einem Stack muss immer alles mit allem zusammenspielen 
@@ -320,32 +395,44 @@
 
 ---
 
-# Sicherheit
+# Verwaltung von Abhängigkeiten
+
+---
+
+## Sicherheitsprüfungen
 
 * `npm audit`
   * auch in [Nexus integriert](https://help.sonatype.com/repomanager3/nexus-repository-administration/formats/npm-registry/npm-audit) (eventuell nur mit Nexus IQ)
+* [OWASP dependency-check](https://github.com/jeremylong/DependencyCheck) 
+ * Integration u.a. in [Jenkins](https://plugins.jenkins.io/dependency-check-jenkins-plugin/) und [Sonarqube](https://github.com/dependency-check/dependency-check-sonar-plugin)
 
-# Abhängigkeitsmanagement
+---
 
+## Abhängigkeitsmanagement
+
+* [Renovate](https://docs.renovatebot.com/): erzeugt Pull Requests für veraltete Dependecies
+  * Kann selbst gehostet werden
+* [Dependabot](https://github.com/dependabot), Pull Requests für GitHub
+  * [dependabot-gitlab](https://gitlab.com/dependabot-gitlab/dependabot): Fork/Klon/Kopie für GitLab
 * [CycloneDX](https://cyclonedx.org/): Erzeugt einen Software Bill-of-Material (sbom) für ein Java/Node/...-Projekt
   * Es gibt Support für diverse [Tools, Sprachen etc.](https://cyclonedx.org/tool-center/)
-* Der SBOM kann in Depdency Tracker eingelesen werden
-* [dependencyTrack](https://dependencytrack.org/) kann bestimmte Prüfungen durchführen: Verwendete Lizenzen, Security Alerts
+* Der SBOM kann in [Dependency Track](https://dependencytrack.org/) eingelesen werden
+*  DT kann bestimmte Prüfungen durchführen: Verwendete Lizenzen, Security Alerts
   * Integration in [Jenkins mittels Plugin](https://plugins.jenkins.io/dependency-track/)
 
----  
+---
 
-# Releases  
+## Releases  
 
-* semantic-release: https://github.com/semantic-release/semantic-release
-* Commitizen: https://commitizen-tools.github.io/commitizen/
+* [semantic-release](https://github.com/semantic-release/semantic-release): Erzeugt Releases mit Versionsnummern, Git Tags und Changelog an Hand von [Commit Message Konventionen](https://github.com/semantic-release/semantic-release#commit-message-format)
+  * Insbesondere [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+* [Commitizen](https://commitizen-tools.github.io/commitizen/): Erzwingt Commit-Kommentare in bestimmten Format, selbst definiert oder Convential Commits
 
           </textarea>
         </section>
         <section>
           <h2>Geschafft! 😊</h2>
           <h3>Vielen Dank für Eure Teilnahme!</h3>
-          <h3>Viel Spaß und Erfolg mit GraphQL!</h3>
           <p>Wenn ihr noch Fragen habt, könnt ihr mich erreichen:</p>
           <p>
             <a href="mailto:nils@nilshartmann.net">nils@nilshartmann.net</a>
