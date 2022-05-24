@@ -1,10 +1,10 @@
 {
   "name": "@nilshartmann/app",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@nilshartmann/lib": "1.5.0",
+    "@nilshartmann/lib": "2.0.0",
     "@nilshartmann/utils": "1.2.0"
   },
   "scripts": {
