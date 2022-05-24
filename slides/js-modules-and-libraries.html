@@ -123,6 +123,7 @@
   * _Performance_ bei Package-Managern bezieht sich in der Regel auf diese beiden Punkte (Installation/Upgrade von Packages)  
   * Lock-Files um "einzufrieren", welche Packages in welcher Version von welcher Quelle installiert wurden
    - Ermöglicht reproduzierbare Builds
+  * Zugriff nur auf Packages, die in der `package.json`-Datei beschrieben sind und nicht auf transiente Abhängigkeiten.
 * Scripte
   * Ausführen lokaler Skripte, z.B. zum Starten einer Anwendung (`scripts` in `package.json`)
   
@@ -143,16 +144,29 @@
 
 * npm - Klassiker, in Node enthalten
 * [yarn ("classic")](https://classic.yarnpkg.com/lang/en/) - war mal schneller als npm und hatte als erstes `.lock`-Dateien und Workspace-Konzept
-* [yarn 2/3 ("betty")](https://yarnpkg.com/) 
-  - "plug-n-play" (keine Installation von Packages mehr notwendig, effizientere Speicherung von Packages)
+* [yarn 2/3 ("berry")](https://yarnpkg.com/) 
+  - "zero install": Installierte Packages können eingecheckt werden, müssen dann nicht installiert werden (optional)
+  - "plug-n-play":  Packages werden in _einer_ Datei und nicht in `node_modules` abgelegt
     - Das muss dann in allen Tools funktionieren, z.B. auch IDEs, TypeScript oder Webpack
     - Yarn z.B. greift dazu in den resolution-Prozess ein (und [patched TypeScript beim Installieren](https://github.com/yarnpkg/berry/tree/master/packages/plugin-compat)!) 😱
+    - Node-Prozesse müssen über `scripts` ausgeführt werden
+      - oder Anwendungen [angepasst werden](https://yarnpkg.com/features/pnp#initializing-pnp)
+    - Kann per [nodeLinker-Konfiguration](https://yarnpkg.com/configuration/yarnrc#nodeLinker) umgestellt werden auf `node_modules`  
   - Dependency-Regeln mit Prolog
 * [pnpm](https://pnpm.io) - "performant" npm
  - Dateien im node_modules-Verzeichnis werden verlinkt
  - Package müssen daher nur einmal lokal installiert werden
 * [corepack](https://nodejs.org/dist/latest/docs/api/corepack.html) (_experimentell_) 
   - kein Packagemanager, sondern "Proxy" in Node, um transparent (ohne Installation) den Package-Manager eines Projekts zu verwenden
+* Beispiele: https://github.com/nilshartmann/package-manager-playground
+
+---
+
+## Package-Manager: Nur direkte Packages verwenden
+
+* `npm` und `yarn` sowie `yarn berry` ohne pnp erlauben die Verwendung von Packages, die nicht direkt in die package.json-Datei eingetragen sind
+  - transitive Dependencies
+* `pnpm` und `yarn berry` mit pnp stellen sicher, dass man nur Abhängigkeiten verwendet, die auch in der `package.json`-Datei aufgeführt sind.  
 
 ---
 
@@ -331,7 +345,8 @@
   * Beschreibt, in welcher Reihenfolge welche Packages gebaut werden müssen 
   * wie die Packages gebaut werden müssen
   * Die Tasks können parallel laufen (!)
-  * Caching von Ergebnissen (auch in der Cloud), so dass nur Änderungen neu gebaut werden müssen
+  * Caching von Ergebnissen so dass nur Änderungen neu gebaut werden müssen
+  * "Remote Caching": Ergebnisse werden in der Cloud gecached (Vercel Cloud oder - theoretisch [eigene](https://turborepo.org/docs/core-concepts/remote-caching#custom-remote-caches)). Beta!
 * Wie die einzelnen Packages gebaut werden, entscheidet jedes Package selbst (z.B. mit create-react-app)
 * Kein Workflow zum Veröffentlichen von Packages. In der Doku wird dafür auf Lerna verwiesen...
 
@@ -342,15 +357,15 @@
 ### NX
 
 * [https://nx.dev/](https://nx.dev/)
-* Unglaublich viel Tooling für alles mögliche
-* Inklusive Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
 * Workspaces bestehen aus Anwendungen und Bibliotheken
-* Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
-  * man kann sie aber explizt [so konfigurieren](https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
 * Code-Generatoren erzeugen Boilerblate-Code für alles mögliche
   * Zum Beispiel React Apps, UI Libs, Tests
   * Unter der Haube wird für React wohl Webpack verwendet
-
+  * Plug-ins für [einige Editoren](https://nx.dev/using-nx/console)
+* Bibliotheken sind per Default nicht für "standalone-publishing" gedacht
+  * man kann sie aber explizt [so konfigurieren](https://nx.dev/structure/buildable-and-publishable-libraries#publishable-libraries)
+* Build-Artefakte können in NX Cloud geteilt werden, die [privat gehostet](https://nx.app/docs/get-started-with-private-cloud-community) werden kann
+  
 ---
 
 ## Rush
@@ -361,6 +376,9 @@
 * Support für inkremtental Builds und Publishing von Packages
   * Führt zum Build einfach `npm run build` in jedem Package aus
   * Was man dabei macht, ist einem selbst überlassen
+* [Remote Cache](https://rushjs.io/pages/maintainer/build_cache/#enabling-cloud-storage) für Build-Artefakte (Beta)
+ * Support für Azure und S3
+ * Theoretisch eigene via Plug-in möglich  
 
 ---
 
