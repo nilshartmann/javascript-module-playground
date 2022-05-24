@@ -24,3 +24,13 @@
 
 - Run `pnpm -r publish --no-git-checks`
   - `--no-git-checks` only here in demo environment!
+
+## Changeset
+
+- Modify `lib` or `utils` and save. \*\*Do not alter version in `package.json`
+- Run `pnpm changeset`
+- Select your modified package
+- Select `major change`
+- Run `pnpm changeset version`
+- See git changes and commit
+- Run `pnpm publish -r`
