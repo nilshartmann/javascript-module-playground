@@ -1,0 +1,21 @@
+{
+  "name": "@nilshartmann/app",
+  "version": "2.0.0",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@nilshartmann/lib": "1.5.0",
+    "@nilshartmann/utils": "1.2.0"
+  },
+  "scripts": {
+    "clean": "del build/ && del node_modules",
+    "start": "node build/main.js",
+    "build": "del build/ && tsc -p .",
+    "dev": "ts-node --esm src/main.ts"
+  },
+  "devDependencies": {
+    "del-cli": "^4.0.1",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}

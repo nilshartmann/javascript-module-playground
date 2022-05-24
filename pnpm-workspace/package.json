@@ -1,0 +1,12 @@
+{
+  "name": "pnpm-workspace",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "clean": "echo 'clean root!!!!'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
