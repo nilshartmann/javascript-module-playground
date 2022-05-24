@@ -22,11 +22,11 @@ importers:
 
   packages/lib:
     specifiers:
-      '@nilshartmann/utils': 1.0.0
+      '@nilshartmann/utils': 1.2.0
       del-cli: ^4.0.1
       typescript: ^4.6.4
     dependencies:
-      '@nilshartmann/utils': 1.0.0
+      '@nilshartmann/utils': link:../utils
     devDependencies:
       del-cli: 4.0.1
       typescript: 4.6.4
@@ -84,11 +84,6 @@ packages:
       '@jridgewell/resolve-uri': 3.0.7
       '@jridgewell/sourcemap-codec': 1.4.13
     dev: true
-
-  /@nilshartmann/utils/1.0.0:
-    resolution: {integrity: sha512-//vRV9MCybDKTHD7geovmtH4Ka+JSVF+KrRl1yZLyhiW/bk5HgZHsMpNW4S2QYp9YW0Ywr5f4SRZOggEPn8zkQ==}
-    engines: {node: '>=12'}
-    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

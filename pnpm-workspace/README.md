@@ -12,7 +12,9 @@
 
 ## Publishing
 
-- Start Verdaccio npm registry: `docker run -it --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio`
+- Start Verdaccio npm registry: `./run-verdaccio.zsh`
+
+- Verdaccio Web Interface: http://localhost:4873/
 
 - Log in `npm login --registry http://localhost:4873` (use any user and password you like)
 
