@@ -27,7 +27,7 @@
 
 ## Changeset
 
-- Modify `lib` or `utils` and save. \*\*Do not alter version in `package.json`
+- Modify `lib` or `utils` and save. **Do not alter version in `package.json`**
 - Run `pnpm changeset`
 - Select your modified package
 - Select `major change`
