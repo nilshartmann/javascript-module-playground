@@ -1,0 +1,14 @@
+{
+  "name": "two-apps",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": "true",
+  "workspaces": [
+    "frontend",
+    "lib"
+  ],
+  "scripts": {
+    "clean": "rm -rf frontend/node_modules/ && rm -rf .lib/node_modules/ && rm -rf ./node_modules/"
+  }
+}

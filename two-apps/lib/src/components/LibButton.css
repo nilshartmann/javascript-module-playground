@@ -1,0 +1,16 @@
+.LibButton {
+  font-size: 24px;
+  color: darkblue;
+
+  margin-top: 2px;
+  margin-bottom: 10px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+
+  border: 1px solid red;
+}
